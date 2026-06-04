@@ -1,8 +1,12 @@
 package study.todo_project.controller;
 
 import lombok.Getter;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.tags.ArgumentAware;
 import study.todo_project.domain.Todo;
+
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +17,24 @@ public class TodoController {
     private List<Todo> todoList = new ArrayList<>();
     private long nextID = 1L;
 
-    //get - 전체 조회
+
     @GetMapping
     public List<Todo> getAllTodos() {
         return todoList;
     }
 
+    //Get localhost:8080/todos/2
+    @GetMapping("/{id}")
+    public Todo getTodoById(@PathVariable Long id) {
+        for (Todo todo : todoList) {
+            if (todo.getId().equals(id)) {
+                return todo;
+            }
+        }
+        return null;
+    }
+
+    //get 조회
     @PostMapping
     public Todo createtodo(
             @RequestBody Todo todo
@@ -28,4 +44,44 @@ public class TodoController {
         todoList.add(todo);
         return todo;
     }
+
+    @PutMapping("/{id}")
+    public Todo updateTodo(
+            @PathVariable Long id,
+            @RequestBody Todo updateTodo) {
+        for (Todo todo : todoList) {
+            if (todo.getId().equals(id)) {
+                todo.setTitle(updateTodo.getTitle());
+                todo.setCompleted(updateTodo.isCompleted());
+
+                return todo;
+            }
+        }
+        return null;
+    }
+    @DeleteMapping("/{id}")
+    public Todo deleteTodo(
+            @PathVariable Long id,
+            @RequestBody Todo deleteTodo) {
+        for (Todo todo : todoList) {
+            if (todo.getId().equals(id)) {
+                todoList.remove(todo);
+                    return todo;
+            }
+        }
+        return null;
+    }
+    @PatchMapping("/{id}")
+    public Todo patchTodo(@PathVariable Long id) {
+        for (Todo todo : todoList) {
+            if (todo.getId().equals(id)) {
+                todo.setCompleted(!todo.isCompleted());
+                return todo;
+            }
+        }
+        return null;
+    }
+
 }
+
+
